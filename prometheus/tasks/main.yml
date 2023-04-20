@@ -1,11 +1,5 @@
 ---
 # tasks file for prometheus
-
-- name: check if prometheus exist
-  stat:
-    path: "{{ prometheus_bin }}"
-  register: __check_prometheus_present
-
 - name: create prometheus user
   user:
     name: "{{ prometheus_user }}"
@@ -21,23 +15,55 @@
     owner: "{{ prometheus_user }}"
     group: "{{ prometheus_group }}"
 
+- name: create prometheus bin dir
+  file:
+    path: "{{ prometheus_bin }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+
+    
+- name: create prometheus log dir
+  file:
+    path: "{{ prometheus_log_conf }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+
 - name: download and unzip prometheus if not exist
   unarchive:
     src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
     dest: /tmp/
     remote_src: yes
     validate_certs: no
-  when: __check_prometheus_present.stat.exists == false
 
 - name: move the binary to the final destination
   copy:
-    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/"
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/prometheus"
     dest: "{{ prometheus_bin }}"
     owner: "{{ prometheus_user }}"
     group: "{{ prometheus_group }}"
     mode: 0755
     remote_src: yes
-  when: __check_prometheus_present.stat.exists == false
+
+- name: move the consoles to the final destination
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/consoles"
+    dest: "{{ prometheus_dir_conf }}"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: 0755
+    remote_src: yes
+
+- name: move the console_libraries to the final destination
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/console_libraries"
+    dest: "{{ prometheus_dir_conf }}"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: 0755
+    remote_src: yes
+
 
 - name: clean
   file:
@@ -67,6 +93,7 @@
      mode: 0755
      owner: prometheus
      group: prometheus
-  notify: reload_daemon_and_restart_prometheus 
+  notify: reload_daemon_and_restart_prometheus
+ 
 
 - meta: flush_handlers
