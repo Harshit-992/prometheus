@@ -1,10 +1,11 @@
 ---
 # defaults file for prometheus
-prometheus_dir_conf: "/etc/prometheus"
+prometheus_dir_conf: "/opt/prometheus"
 prometheus_retention_time: "365d"
 prometheus_scrape_interval: "30s"
 prometheus_version: "2.43.0"
-prometheus_bin: /usr/local/bin/prometheus
+prometheus_bin: /opt/prometheus-apps/prometheus/bin/
+prometheus_log_conf: "/opt/prometheus-apps/prometheus/log/promlog"
 prometheus_user: prometheus
 prometheus_group: "{{ prometheus_user }}"
 prometheus_node_exporter: true
