@@ -7,7 +7,11 @@ After=network-online.target
 User=prometheus
 Group=prometheus
 Type=simple
-ExecStart={{ prometheus_bin }}
+ExecStart=/opt/prometheus-apps/prometheus/bin/prometheus \
+    --config.file /opt/prometheus-apps/prometheus/prometheus.yml \
+    --storage.tsdb.path /opt/prometheus-apps/prometheus/log/promlog/ \
+    --web.console.templates=/opt/prometheus-apps/prometheus/consoles \
+    --web.console.libraries=/opt/prometheus-apps/prometheus/console_libraries
 
 [Install]
 WantedBy=multi-user.target
