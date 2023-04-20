@@ -1,5 +1,5 @@
 - name: install prometheus
-  hosts: localhost
+  hosts: webserver
   become: yes
   roles:
   - prometheus
